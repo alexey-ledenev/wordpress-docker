@@ -1,0 +1,1 @@
+Your Wordpress folder structure will be here.

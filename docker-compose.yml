@@ -1,0 +1,54 @@
+version: "3"
+
+services:
+  wp:
+    #image: wordpress:latest
+    container_name: wp-1
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+    - 3050:80
+    volumes:
+    - ./wordpress:/var/www/html
+    depends_on: 
+      - db
+    environment:
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_USER: root
+      WORDPRESS_DB_PASSWORD: root
+
+  
+  db:
+    image: mysql:5.7
+    container_name: db-1
+    command: --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: database1
+      МYSQL_USЕR: root
+      MYSQL_PASSWORD: root
+    volumes: 
+      - ./db:/var/lib/mysql
+
+  adminer:
+    image: adminer
+    container_name: adminer-1
+    restart: on-failure
+    depends_on:
+      - db
+    ports:
+      - 3051:8080
+
+  minio:
+    container_name: minio-1
+    image: minio/minio
+    command: server /data
+    #user: ${CURRENT_UID}
+    volumes:
+      - ./minio:/data
+    environment:
+      MINIO_ACCESS_KEY: admin
+      MINIO_SECRET_KEY: 12345678
+    ports:
+      - 9000:9000
